@@ -1,0 +1,241 @@
+好的！以下是一個簡易學生管理系統的 Java 範例，功能包括：
+
+新增學生
+
+刪除學生
+
+顯示所有學生
+
+離開系統
+
+這個版本會使用 ArrayList 來儲存學生資料，並透過 Scanner 從命令列互動：
+
+
+編譯與執行方式（終端機操作）：
+
+
+vscode 裡面有套件最快穩定 直接 run java 這個套件
+
+
+非必要再打指令
+javac StudentManagementSystem.java
+java StudentManagementSystem
+
+✅ 中文亂碼解法補充：
+在命令列下執行前，請輸入：
+
+
+
+
+✅ 功能簡述：
+功能項	說明
+1.輸入學號、姓名、年齡後加入學生
+2.根據輸入的學號刪除學生資料
+3.列出所有目前系統內的學生
+4.離開程式
+
+
+操作實例
+
+--- 學生管理系統 ---
+1.新增學生
+2.刪除學生
+3.顯示所有學生
+4.離開系統
+請選擇操作:
+1
+請輸入學號:
+1
+請輸入姓名
+王大明
+請輸入年齡
+25
+? 已新增學生！
+
+--- 學生管理系統 ---
+1.新增學生
+2.刪除學生
+3.顯示所有學生
+4.離開系統
+請選擇操作:
+1
+請輸入學號:
+2
+請輸入姓名
+王曉明
+請輸入年齡
+33
+? 已新增學生！
+
+--- 學生管理系統 ---
+1.新增學生
+2.刪除學生
+3.顯示所有學生
+4.離開系統
+請選擇操作:
+1
+請輸入學號:
+3
+請輸入姓名
+jay
+請輸入年齡
+30
+? 已新增學生！
+
+--- 學生管理系統 ---
+1.新增學生
+2.刪除學生
+3.顯示所有學生
+4.離開系統
+請選擇操作:
+1
+請輸入學號:
+4
+請輸入姓名
+我很帥  
+請輸入年齡
+40
+? 已新增學生！
+
+--- 學生管理系統 ---
+1.新增學生
+2.刪除學生
+3.顯示所有學生
+4.離開系統
+請選擇操作:
+3
+
+--- 所有學生清單 ---
+學號: 1，姓名: 王大明，年齡: 25
+學號: 2，姓名: 王曉明，年齡: 33
+學號: 3，姓名: jay，年齡: 30
+學號: 4，姓名: 我很帥，年齡: 40
+
+--- 學生管理系統 ---
+1.新增學生
+2.刪除學生
+3.顯示所有學生
+4.離開系統
+請選擇操作:
+
+
+//////////////////////////////////
+加上註解的代碼 
+
+// 匯入需要用到的類別
+import java.util.ArrayList; // 用來儲存學生的動態列表
+import java.util.Scanner;   // 用來接收使用者輸入
+
+// 定義學生類別
+class Student {
+    private String id;   // 學號
+    private String name; // 姓名
+    private int age;     // 年齡
+
+    // 建構子：建立學生物件時使用
+    public Student(String id, String name, int age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
+
+    // Getter：取得學號（用於刪除時比對）
+    public String getId() {
+        return id;
+    }
+
+    // 回傳學生的文字資訊（用於列印學生資料）
+    public String toString() {
+        return "學號: " + id + "，姓名: " + name + "，年齡: " + age;
+    }
+}
+
+// 主程式類別：學生管理系統
+public class StudentManagementSystem {
+    // 建立學生清單，使用 ArrayList 儲存 Student 物件
+    private static ArrayList<Student> students = new ArrayList<>();
+    // 建立 Scanner 物件，用來接收使用者輸入
+    private static Scanner scanner = new Scanner(System.in, "UTF-8"); // 指定 UTF-8 解決亂碼
+
+    // 主方法：程式進入點
+    public static void main(String[] args) {
+        boolean running = true; // 控制是否繼續執行
+
+        // 持續顯示選單，直到選擇離開
+        while (running) {
+            showMenu(); // 顯示主選單
+            String choice = scanner.nextLine(); // 讀取使用者輸入的選項
+
+            // 根據使用者選擇執行對應動作
+            switch (choice) {
+                case "1":
+                    addStudent(); // 新增學生
+                    break;
+                case "2":
+                    removeStudent(); // 刪除學生
+                    break;
+                case "3":
+                    showAllStudents(); // 顯示所有學生
+                    break;
+                case "4":
+                    System.out.println("系統結束，謝謝使用！");
+                    running = false; // 離開系統
+                    break;
+                default:
+                    System.out.println("請輸入有效的選項！");
+            }
+        }
+    }
+
+    // 顯示主選單
+    private static void showMenu() {
+        System.out.println("\n--- 學生管理系統 ---");
+        System.out.println("1. 新增學生");
+        System.out.println("2. 刪除學生");
+        System.out.println("3. 顯示所有學生");
+        System.out.println("4. 離開系統");
+        System.out.print("請選擇操作：");
+    }
+
+    // 新增學生的方法
+    private static void addStudent() {
+        System.out.print("請輸入學號：");
+        String id = scanner.nextLine(); // 讀取學號
+        System.out.print("請輸入姓名：");
+        String name = scanner.nextLine(); // 讀取姓名（可能是中文）
+        System.out.print("請輸入年齡：");
+        int age = Integer.parseInt(scanner.nextLine()); // 讀取年齡並轉為整數
+
+        // 建立學生物件並加入清單
+        students.add(new Student(id, name, age));
+        System.out.println("✔ 已新增學生！");
+    }
+
+    // 刪除學生的方法
+    private static void removeStudent() {
+        System.out.print("請輸入要刪除的學生學號：");
+        String id = scanner.nextLine(); // 讀取輸入的學號
+
+        // 使用 removeIf 根據學號移除符合的學生
+        boolean removed = students.removeIf(s -> s.getId().equals(id));
+        if (removed) {
+            System.out.println("✔ 學生已刪除！");
+        } else {
+            System.out.println("✘ 查無此學號！");
+        }
+    }
+
+    // 顯示所有學生的方法
+    private static void showAllStudents() {
+        System.out.println("\n--- 所有學生清單 ---");
+        if (students.isEmpty()) {
+            System.out.println("目前沒有學生資料。");
+        } else {
+            // 用迴圈列印每位學生
+            for (Student s : students) {
+                System.out.println(s);
+            }
+        }
+    }
+}
+
