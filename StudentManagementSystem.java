@@ -1,7 +1,11 @@
 
 // 簡易學生管理系統
+
+// 簡易學生管理系統
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 class Student {
     private String id;
@@ -27,9 +31,23 @@ class Student {
 
 public class StudentManagementSystem {
     private static ArrayList<Student> students = new ArrayList<>();
-    private static Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner;
 
     public static void main(String[] args) {
+        // 強制設定標準輸出/錯誤為 UTF-8，並使用 UTF-8 讀取標準輸入，
+        // 可減少在 Windows 預設 OEM/ANSI 與檔案編碼不一致時出現的問號替代字元
+        try {
+            System.setOut(
+                    new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out)), true, "UTF-8"));
+            System.setErr(
+                    new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err)), true, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            // 若 JVM 不支援 UTF-8（極不可能），則使用預設輸出
+        }
+
+        // 以 UTF-8 讀取標準輸入，避免 Scanner 使用非預期預設字元集
+        scanner = new Scanner(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+
         boolean running = true;
 
         while (running) {
