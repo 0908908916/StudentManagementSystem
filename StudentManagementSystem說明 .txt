@@ -1,3 +1,13 @@
+
+解決終端機 ??? 問題
+在 cmd.exe 輸入（或在 PowerShell 也能執行）：
+chcp 65001
+cd /d "c:\Users\USER\Desktop\java 設計物件專案程式碼"
+java -Dfile.encoding=UTF-8 StudentManagementSystem
+說明：第一行把 Windows 控制台 code page 改為 UTF-8，第二行啟動 JVM 並強制 file.encoding 為 UTF-8。
+這會讓你鍵入的中文以 UTF-8 傳給 Java，Java 也用 UTF-8 輸出，通常就不會看到 ????。
+
+
 好的！以下是一個簡易學生管理系統的 Java 範例，功能包括：
 
 新增學生
@@ -123,80 +133,88 @@ jay
 加上註解的代碼 
 
 
+
 // 簡易學生管理系統
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+//
+// 此程式為教學用的命令列互動範例，包含：新增、刪除與顯示學生資料。
+// 我已於下方將程式每個重要部分加上中文註解，方便閱讀與教學使用。
 
+import java.nio.charset.StandardCharsets; // 可用於字元編碼處理（目前程式未直接使用）
+import java.util.ArrayList; // 用來儲存學生清單
+import java.util.Scanner; // 用來讀取使用者從 stdin 的輸入
+
+/*
+ * Student 類別：封裝學生資料（學號、姓名、年齡）
+ * - 提供建構子建立物件
+ * - 提供 getId() 供外部依學號搜尋/比對
+ * - 覆寫 toString() 以人可讀格式輸出學生資料
+ */
 class Student {
-    private String id;
-    private String name;
-    private int age;
+    private String id; // 學號（字串以支援前導零）
+    private String name; // 學生姓名
+    private int age; // 年齡
 
-    // 建構子
+    // 建構子：用學號、姓名、年齡建立新的 Student 物件
     public Student(String id, String name, int age) {
         this.id = id;
         this.name = name;
         this.age = age;
     }
 
-    // Grtter
+    // 取得學號（供刪除功能比對使用）
     public String getId() {
         return id;
     }
 
+    // 覆寫 toString，當 System.out.println(student) 時會以此格式顯示
     public String toString() {
         return "學號: " + id + "，姓名: " + name + "，年齡: " + age;
     }
 }
 
+/*
+ * StudentManagementSystem 主程式
+ * - 使用一個 ArrayList<Student> 儲存目前的學生清單
+ * - 透過 Scanner 從標準輸入讀取使用者命令
+ * - 提供互動式選單：1.新增 2.刪除 3.顯示 4.離開
+ */
 public class StudentManagementSystem {
+    // 存放學生物件的容器
     private static ArrayList<Student> students = new ArrayList<>();
-    private static Scanner scanner;
+
+    // Scanner 用來從標準輸入讀取使用者輸入（nextLine() 逐行讀）
+    private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        // 強制設定標準輸出/錯誤為 UTF-8，並使用 UTF-8 讀取標準輸入，
-        // 可減少在 Windows 預設 OEM/ANSI 與檔案編碼不一致時出現的問號替代字元
-        try {
-            System.setOut(
-                    new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.out)), true, "UTF-8"));
-            System.setErr(
-                    new PrintStream(new BufferedOutputStream(new FileOutputStream(FileDescriptor.err)), true, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            // 若 JVM 不支援 UTF-8（極不可能），則使用預設輸出
-        }
+        boolean running = true; // 主迴圈開關
 
-        // 以 UTF-8 讀取標準輸入，避免 Scanner 使用非預期預設字元集
-        scanner = new Scanner(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-
-        boolean running = true;
-
+        // 主迴圈：顯示選單並根據使用者輸入執行對應功能
         while (running) {
-            showMenu();
-            String choice = scanner.nextLine();
+            showMenu(); // 顯示功能選單
+            String choice = scanner.nextLine(); // 讀取使用者選項（以字串處理）
 
             switch (choice) {
                 case "1":
-                    addStudent();
+                    addStudent(); // 新增學生
                     break;
                 case "2":
-                    removeStudent();
+                    removeStudent(); // 刪除學生（以學號比對）
                     break;
                 case "3":
-                    showAllStudents();
+                    showAllStudents(); // 顯示所有學生
                     break;
                 case "4":
                     System.out.println("系統結束，謝謝使用!!~");
-                    running = false;
+                    running = false; // 結束主迴圈，程式結束
                     break;
                 default:
+                    // 非法輸入時的提醒
                     System.out.println("請輸入有效的選項");
             }
         }
     }
 
-    // 顯示功能選項
+    // 顯示主選單的文字介面
     public static void showMenu() {
         System.out.println("\n--- 學生管理系統 ---");
         System.out.println("1.新增學生");
@@ -206,24 +224,29 @@ public class StudentManagementSystem {
         System.out.println("請選擇操作:");
     }
 
-    // 新增學生
+    // 新增學生：逐一詢問學號、姓名、年齡，並建立 Student 物件加入 students 清單
     private static void addStudent() {
         System.out.println("請輸入學號:");
-        String id = scanner.nextLine();
+        String id = scanner.nextLine(); // 以字串讀取學號，避免前導零被剃除
+
         System.out.println("請輸入姓名");
-        String name = scanner.nextLine();
+        String name = scanner.nextLine(); // 讀取姓名（支援中文字串）
+
         System.out.println("請輸入年齡");
+        // 讀取年齡並轉為整數；此處未做輸入驗證，若輸入非數字會丟出 NumberFormatException
         int age = Integer.parseInt(scanner.nextLine());
 
+        // 建立並加入學生清單
         students.add(new Student(id, name, age));
         System.out.println("✔ 已新增學生！");
     }
 
-    // 刪除學生
+    // 刪除學生：以使用者輸入的學號為條件移除清單中的學生
     private static void removeStudent() {
         System.out.println("請輸入要刪除學生的學號");
         String id = scanner.nextLine();
 
+        // 使用 removeIf 以 lambda 表示式比對學號並移除符合者，返回是否有移除成功
         boolean removed = students.removeIf(s -> s.getId().equals(id));
         if (removed) {
             System.out.println("學生已刪除");
@@ -232,18 +255,20 @@ public class StudentManagementSystem {
         }
     }
 
-    // 顯示所有學生
+    // 顯示所有學生：若清單為空，印出提示；否則逐筆列印學生物件的 toString() 結果
     private static void showAllStudents() {
         System.out.println("\n--- 所有學生清單 ---");
         if (students.isEmpty()) {
             System.out.println("目前沒有學生資料");
         } else {
             for (Student s : students) {
-                System.out.println(s);
+                System.out.println(s); // 會呼叫 Student.toString()，顯示學號/姓名/年齡
             }
         }
     }
 }
-}
+
+
+
 
 
